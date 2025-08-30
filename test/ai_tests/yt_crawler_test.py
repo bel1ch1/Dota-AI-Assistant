@@ -1,4 +1,4 @@
-from ai.feature.youtube_crawler import YT_Crawler
+from ai.pipelines.feature_pipe.youtube_crawler import YT_Crawler
 
 video_ids = [
     "C4MTHAJO9mg",

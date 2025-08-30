@@ -1,3 +1,7 @@
 .env
 venv
 __pycache__
+*.egg-info/
+build/
+dist/
+Dota_AI_Assistant.egg-info

@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=65.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dota-ai-assistant"
+version = "0.1.0"
+description = "AI Assistant for Dota 2"
+authors = [
+    {name = "bel1ch1", email = "andreyzv5555@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+license = {text = "MIT"}
+
+dependencies = [
+    "ruamel-yaml>=0.18.15,<0.19.0",
+    "zenml[server]>=0.84.3,<0.85.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0,<8.0.0",
+    "black>=23.0.0,<24.0.0",
+    "flake8>=6.0.0,<7.0.0"
+]
+
+[tool.setuptools]
+packages = ["ai"]
+
+[tool.setuptools.package-dir]
+dota_ai_assistant = "src/ai"
+ai = "src/ai"
+pipelines = "src/ai/pipelines"
+data_pipe = "src/ai/pipelines/data_pipe"
