@@ -22,5 +22,5 @@ class AiConfig(ConfigBase):
     embedder: str
 
 
-tg_congig = TelegramConfig()
+tg_config = TelegramConfig()
 ai_config = AiConfig()
