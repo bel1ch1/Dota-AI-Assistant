@@ -19,7 +19,7 @@ def question_about_dota_prompt():
 
 def qa_with_retriever():
     """Промпт с дополнительным контекстом на основе данных из ретривера."""
-    prompt = ChatPromptTemplate([
+    prompt = ChatPromptTemplate.from_messages([
         SystemMessagePromptTemplate.from_template(
             """Ты Coach для игры Dota 2. Отвечай на вопрос на основе данных из базы знаний.
 

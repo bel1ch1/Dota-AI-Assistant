@@ -18,7 +18,7 @@ class YT_Crawler:
 
 
     def get_transcriptions(self) -> List[str]:
-        """Метод для получения неочищенных транскрипций из видео.
+        """Метод для получения неочищенных транскрипций для каждого video_id.
         Returns:
             dirty_texts (list[str]): Не очищенные текста из видео
         """
@@ -37,7 +37,12 @@ class YT_Crawler:
         return self.transcriptions
 
     def clear_yt_text(self) -> List[str]:
-        """Метод для первичной обработки полученных текстов"""
+        """
+        Метод для первичной обработки полученных текстов
+
+        Returns:
+            List[str]: Список из первично обработанных транскрипций видео.
+        """
         processed_transcriptions = []
         patterns = [
             r'\([^()]*\)',  # Круглые скобки
