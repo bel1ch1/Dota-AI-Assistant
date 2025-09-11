@@ -1,0 +1,22 @@
+from zenml import step
+from ai.pipelines.data_pipe.utils.llm_model_and_chains import summary_chain
+from typing import List
+
+@step()
+def summarization_step(texts: List[str]) -> List[str]:
+    """
+    Обрабатывает несколько текстов, убирая воду и информацию не по теме.
+
+    Args:
+        texts (List[str]): Список текстов транскрипций из видео.
+
+    Returns:
+        List[str]: Список суммаризированных текстов
+    """
+    summary_texts = []
+    for text in texts:
+        if not text:
+            continue
+        summary_texts.append(summary_chain(text))
+
+    return summary_texts
