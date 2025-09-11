@@ -50,7 +50,7 @@ class QuestionAboutGameChain:
     async def get_answer(self, question: str) -> str:
         try:
             response = await self.resilent_chain.ainvoke({
-                "question": f"{question}\n\nОтветь на этот вопрос как эксперт по Dota 2:"
+                "question": f"{question}"
             })
             return response
         except Exception as e:
