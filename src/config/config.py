@@ -21,12 +21,12 @@ class AiConfig(ConfigBase):
     model_name: str
     embedder: str
 
-# class TraceConfig(ConfigBase):
-#     model_config = SettingsConfigDict(env_prefix="trace_")
+class TraceConfig(ConfigBase):
+    model_config = SettingsConfigDict(env_prefix="trace_")
 
-#     langsmith_api_key: str
+    langsmith: str
 
 
 tg_config = TelegramConfig()
 ai_config = AiConfig()
-# trace_config = TraceConfig()
+trace_config = TraceConfig()
