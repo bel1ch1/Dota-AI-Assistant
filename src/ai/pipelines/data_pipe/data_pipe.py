@@ -3,6 +3,10 @@ from steps.url_extract_step import extract_youtube_video_ids
 from steps.extracting_transcriptopn import extracting_transcription
 from steps.summarization_step import summarization_step # Проблема тут
 
+from config.config import trace_config
+import os
+
+
 
 @pipeline(enable_cache=False)
 def data_pipeline(yaml_file_path: str):
@@ -31,5 +35,7 @@ def data_pipeline(yaml_file_path: str):
     # 9. Loading vectors to the vector Data Base with (tags: domains, metadata: topic name)
 
 if __name__ == "__main__":
+    os.environ["LANGSMITH_TRACING"] = "true"
+    os.environ["LANGSMITH_API_KEY"] = trace_config.langsmith
     path_to_yaml = "C:/work/Dota-AI-Assistant/scripts/data_ref.YAML"
     data_pipeline(path_to_yaml)

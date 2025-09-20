@@ -25,7 +25,7 @@ class TraceConfig(ConfigBase):
     model_config = SettingsConfigDict(env_prefix="trace_")
 
     langsmith: str
-
+    workspace: str
 
 tg_config = TelegramConfig()
 ai_config = AiConfig()
