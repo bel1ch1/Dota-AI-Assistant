@@ -1,7 +1,7 @@
 from zenml import pipeline
 from steps.url_extract_step import extract_youtube_video_ids
 from steps.extracting_transcriptopn import extracting_transcription
-from steps.summarization_step import summarization_step # Проблема тут
+from steps.summarization_step import summarization_step
 
 from config.config import trace_config
 import os
@@ -19,16 +19,22 @@ def data_pipeline(yaml_file_path: str):
     transcriptions = extracting_transcription(video_ids)
 
     # 3. LLM Summarization and clearing
+    # LLM (Summarization)
     summary_texts = summarization_step(transcriptions)
-    print(summary_texts)
-    # 4. Dividing texts into domain knowledge
 
-    # 5. Standardization of text by slang
+    # 4. Dividing texts into domain knowledge
+    # LLM (Structured output) | Parsing
+    #divided_texts = dividing_to_domains_step()
+
+    # 5. Standardization of text by slang.Correction of incorrect terms.
+    # LLM (Correction)
 
     # 6. Dividing each domain into topics that have only one main idea
     #    and extracting names of each topics
+    # LLM (Structured output)
 
     # 7. Checking topics for collisions and contradictions
+    # LLM (Correction with retrieving)
 
     # 8. Vectorization of relevant topics
 
@@ -37,5 +43,5 @@ def data_pipeline(yaml_file_path: str):
 if __name__ == "__main__":
     os.environ["LANGSMITH_TRACING"] = "true"
     os.environ["LANGSMITH_API_KEY"] = trace_config.langsmith
-    path_to_yaml = "C:/work/Dota-AI-Assistant/scripts/data_ref.YAML"
+    path_to_yaml = "C:/work/Dota-AI-Assistant/scripts/data_ref.YAML" #!!! Need Automation
     data_pipeline(path_to_yaml)
