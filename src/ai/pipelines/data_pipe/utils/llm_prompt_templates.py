@@ -1,4 +1,7 @@
-# Набор промптов для выполнения шагов пайплайнов с обработкой LLM
+"""
+Модуль для работы с промптами.
+"""
+
 
 from langchain_core.prompts import (
     ChatPromptTemplate,
@@ -7,7 +10,8 @@ from langchain_core.prompts import (
     FewShotChatMessagePromptTemplate,
 )
 
-#   Few Shot Prompt Examples ######################################################################
+
+#   base for creating few-shot ####################################################################
 base_prompt = ChatPromptTemplate.from_messages(
     [
         ("human", "{input}"),
@@ -15,6 +19,7 @@ base_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
+#   Few Shot Prompt Examples ######################################################################
 examples_few_shot_for_summary = [
     {
         "input": """
@@ -78,17 +83,7 @@ examples_few_shot_for_summary = [
     }
 ]
 
-###################################################################################################
-
-#   Функции для описания ролей промптов ###########################################################
-def few_shot_prompt_for_summary():
-    few_shot_prompt_for_summary = FewShotChatMessagePromptTemplate(
-        example_prompt=base_prompt,
-        examples=examples_few_shot_for_summary
-    )
-
-    return few_shot_prompt_for_summary
-
+#   System prompts ################################################################################
 def system_summary_prompt():
     system_prompt = SystemMessagePromptTemplate.from_template(
         """
@@ -101,7 +96,64 @@ def system_summary_prompt():
 """.replace('\n', ' '))
 
     return system_prompt
-###################################################################################################
+
+def system_prompt_for_dividing_text_to_domains():
+    system_prompt =  SystemMessagePromptTemplate.from_template("""
+Раздели следующий текст на сегменты по следующим доменам:
+
+1. HeroMechanicsTips
+   Сюда относится информация, связанная с игрой за конкретных героев Dota 2:
+   - сборки предметов
+   - прокачка способностей
+   - особенности героев и их механики
+
+2. MatchActionsTips
+   Сюда относится стратегическая информация о действиях в матчах:
+   - тактические советы
+   - стиль игры
+   - принятие решений для достижения победы
+
+3. BaseGameMechanics
+   Сюда относится общая информация об игре, не относящаяся к героям или стратегиям:
+   - количество и расположение объектов на карте
+   - оптимальные маршруты фарма
+   - преимущества от контроля над целевыми объектами
+
+4. ComicStrategies
+   Сюда относятся шуточные или нестандартные стратегии, не направленные на победу, а на развлечение.
+
+---
+
+Требования к сегментации:
+- Каждый сегмент должен принадлежать строго одному домену.
+- Если часть текста не относится ни к одному домену, её можно игнорировать.
+- Сегменты не должны пересекаться и должны покрывать только релевантные куски текста.
+
+Формат вывода (для каждого сегмента):
+- domain: выбранный домен
+- text: текст сегмента
+- topic: краткая тема сегмента
+- start_index: начальный индекс сегмента в исходном тексте
+- end_index: конечный индекс сегмента в исходном тексте
+
+---
+
+Текст для анализа:
+{text}
+
+Формат вывода:
+{format_instructions}""".replace('\n', ' '))
+
+    return system_prompt
+
+#   Функции для описания ролей промптов ###########################################################
+def few_shot_prompt_for_summary():
+    few_shot_prompt_for_summary = FewShotChatMessagePromptTemplate(
+        example_prompt=base_prompt,
+        examples=examples_few_shot_for_summary
+    )
+
+    return few_shot_prompt_for_summary
 
 #   Конечные промпты для определения шагов ########################################################
 def text_summary_prompt():
@@ -118,17 +170,17 @@ def text_summary_prompt():
     return prompt
 
 
-def text_dividing_into_domains():
+def domain_segmentation_prompt():
     """
     Промпт с инструкциями по разделению входного текста на доступные домены знаний.
     """
     prompt = ChatPromptTemplate.from_messages([
-
+        system_prompt_for_dividing_text_to_domains(),
+        HumanMessagePromptTemplate.from_template("{}")
 
     ])
 
     return prompt
-###################################################################################################
 
 #   Проверка структуры промптов ###################################################################
 # prompt = text_summary_prompt()

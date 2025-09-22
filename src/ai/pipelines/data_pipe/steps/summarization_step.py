@@ -1,5 +1,5 @@
 from zenml import step
-from ai.pipelines.data_pipe.utils.llm_model_and_chains import summary_chain
+from ai.pipelines.data_pipe.utils.llm_chains import summary_chain
 from typing import List
 
 @step()
