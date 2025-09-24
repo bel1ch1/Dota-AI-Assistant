@@ -4,11 +4,13 @@
 
 
 from langchain_core.prompts import (
+    PromptTemplate,
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
     FewShotChatMessagePromptTemplate,
 )
+from ai.pipelines.data_pipe.utils.structured_output_parser import segmentation_parser
 
 
 #   base for creating few-shot ####################################################################
@@ -98,7 +100,7 @@ def system_summary_prompt():
     return system_prompt
 
 def system_prompt_for_dividing_text_to_domains():
-    system_prompt =  SystemMessagePromptTemplate.from_template("""
+    system_prompt ="""
 Раздели следующий текст на сегменты по следующим доменам:
 
 1. HeroMechanicsTips
@@ -132,9 +134,6 @@ def system_prompt_for_dividing_text_to_domains():
 Формат вывода (для каждого сегмента):
 - domain: выбранный домен
 - text: текст сегмента
-- topic: краткая тема сегмента
-- start_index: начальный индекс сегмента в исходном тексте
-- end_index: конечный индекс сегмента в исходном тексте
 
 ---
 
@@ -142,7 +141,7 @@ def system_prompt_for_dividing_text_to_domains():
 {text}
 
 Формат вывода:
-{format_instructions}""".replace('\n', ' '))
+{format_instructions}"""
 
     return system_prompt
 
@@ -174,11 +173,11 @@ def domain_segmentation_prompt():
     """
     Промпт с инструкциями по разделению входного текста на доступные домены знаний.
     """
-    prompt = ChatPromptTemplate.from_messages([
-        system_prompt_for_dividing_text_to_domains(),
-        HumanMessagePromptTemplate.from_template("{}")
-
-    ])
+    prompt = PromptTemplate(
+        template=system_prompt_for_dividing_text_to_domains(),
+        input_variables=["text"],
+        partial_variables={"format_instructions": segmentation_parser.get_format_instructions()}
+    )
 
     return prompt
 
