@@ -2,10 +2,11 @@ from zenml import pipeline
 from steps.url_extract_step import extract_youtube_video_ids
 from steps.extracting_transcriptopn import extracting_transcription
 from steps.summarization_step import summarization_step
+from steps.dividing_to_domains_step import dividing_to_domains_step
 
 from config.config import trace_config
+import time
 import os
-
 
 
 @pipeline(enable_cache=False)
@@ -24,7 +25,7 @@ def data_pipeline(yaml_file_path: str):
 
     # 4. Dividing texts into domain knowledge
     # LLM (Structured output) | Parsing
-    #divided_texts = dividing_to_domains_step()
+    divided_texts = dividing_to_domains_step(summary_texts)
 
     # 5. Standardization of text by slang.Correction of incorrect terms.
     # LLM (Correction)

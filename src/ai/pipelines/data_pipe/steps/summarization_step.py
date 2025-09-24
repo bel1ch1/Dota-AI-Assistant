@@ -1,6 +1,8 @@
 from zenml import step
 from ai.pipelines.data_pipe.utils.llm_chains import summary_chain
 from typing import List
+import time
+
 
 @step()
 def summarization_step(texts: List[str]) -> List[str]:
@@ -18,5 +20,6 @@ def summarization_step(texts: List[str]) -> List[str]:
         if not text:
             continue
         summary_texts.append(summary_chain(text))
+        time.sleep(10)
 
     return summary_texts
