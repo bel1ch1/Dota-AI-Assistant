@@ -3,20 +3,35 @@ from pydantic import BaseModel, Field
 from typing import List
 
 
-class Segment(BaseModel):
+class Topic(BaseModel):
+    title: str = Field(description="Название темы")
+    text: str = Field(description="Текст темы")
+
+class Domain(BaseModel):
     domain: str = Field(description="Домен к которому относится сегмент")
-    text: str = Field(description="Текст сегмента")
-
-
-class DomainSegmentation(BaseModel):
-    segments: List[Segment] = Field(
-        description="Список сегментов текста с названиями доменов"
+    topics: List[Topic] = Field(
+        description="Список тем относящихся к определенному домену"
     )
 
-# Парсер на основе Pydantic модели
-segmentation_parser = PydanticOutputParser(pydantic_object=DomainSegmentation)
+class DomainSegmentation(BaseModel):
+    segments: List[Domain] = Field(
+        description="Список доменов, содержащих топики"
+    )
 
-# example of using a structured output parser
+# class TopicSegment(BaseModel):
+#     title: str = Field(description="Короткое название темы")
+#     text: str = Field(description="Текст сегмента")
+
+# class TopicSegmentation(BaseModel):
+#     segments: List[TopicSegment] = Field(
+#         description="Список сегментов текста с названиями тем"
+#     )
+
+# Парсер на основе Pydantic модели
+domain_segmentation_parser = PydanticOutputParser(pydantic_object=DomainSegmentation)
+# topic_segmentation_parser = PydanticOutputParser(pydantic_object=TopicSegmentation)
+
+# example of using a structured output parser #####################################################
 # chain = (
 #     prompt
 #     | model
