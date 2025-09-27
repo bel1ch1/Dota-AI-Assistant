@@ -10,7 +10,9 @@ from langchain_core.prompts import (
     HumanMessagePromptTemplate,
     FewShotChatMessagePromptTemplate,
 )
-from ai.pipelines.data_pipe.utils.structured_output_parser import segmentation_parser
+from ai.pipelines.data_pipe.utils.structured_output_parser import (
+    domain_segmentation_parser
+)
 
 
 #   base for creating few-shot ####################################################################
@@ -101,10 +103,20 @@ def system_summary_prompt():
 
 def system_prompt_for_dividing_text_to_domains():
     system_prompt ="""
-Раздели следующий текст на сегменты по следующим доменам:
+Ты - эксперт по анализу и структурированию текстовой информации, специализирующийся на
+тематике Dota 2.
 
+Твоя задача:
+1. Определить область знаний (домен), к которому относится часть текста
+2. В каждом домене выделить отдельные топики.
+3. Для каждой темы придумать заголовок, который описывает ее содержание и принадлежность. Например,
+если часть текста относится к HeroMechanicsTips или к варианту MatchActionsTips, в котором
+описываются советы по действиям при игре за героя, то в заголовке должна быть указана информация
+о том, к какому герою относятся эти советы.
+
+Всего возможно 4 домена:
 1. HeroMechanicsTips
-   Сюда относится информация, связанная с игрой за конкретных героев Dota 2:
+   Сюда относится информация, связанная с героями Dota 2:
    - сборки предметов
    - прокачка способностей
    - особенности героев и их механики
@@ -124,6 +136,8 @@ def system_prompt_for_dividing_text_to_domains():
 4. ComicStrategies
    Сюда относятся шуточные или нестандартные стратегии, не направленные на победу, а на развлечение.
 
+Формируй информацию в topics так, чтобы она была
+
 ---
 
 Требования к сегментации:
@@ -131,9 +145,41 @@ def system_prompt_for_dividing_text_to_domains():
 - Если часть текста не относится ни к одному домену, её можно игнорировать.
 - Сегменты не должны пересекаться и должны покрывать только релевантные куски текста.
 
-Формат вывода (для каждого сегмента):
+Формат вывода для каждого сегмента:
 - domain: выбранный домен
-- text: текст сегмента
+- topics: список тем относящихся к домену
+
+Формат вывода для каждого топика:
+- title: заголовок описывающий тему
+- text: текст относящийся к теме
+
+---
+
+Формат вывода должен строго соответствовать следующей схеме:
+{format_instructions}
+
+Текст для анализа:
+{text}
+"""
+
+    return system_prompt
+
+def system_prompt_for_dividing_domain_texts_to_topics():
+    system_prompt = """
+Раздели следующий текст на сегменты (topics), где каждый сегмент отражает только
+одну законченную тему.
+
+---
+
+Требования к сегментации:
+- Сегменты должны быть самостоятельными и содержать связный контекст.
+- Внутри одного сегмента не должно быть нескольких разных тем.
+- Длина сегмента должна быть достаточной для понимания контекста, но без избыточных отклонений.
+- Текст в сегментах должен быть в виде строки без форматирования для md и других файлов.
+
+Формат вывода (для каждого сегмента):
+- title: Короткое название темы
+- text: текст сегмента без форматирования
 
 ---
 
@@ -176,10 +222,27 @@ def domain_segmentation_prompt():
     prompt = PromptTemplate(
         template=system_prompt_for_dividing_text_to_domains(),
         input_variables=["text"],
-        partial_variables={"format_instructions": segmentation_parser.get_format_instructions()}
+        partial_variables={
+            "format_instructions": domain_segmentation_parser.get_format_instructions()
+        }
     )
 
     return prompt
+
+def topic_segmentation_prompt():
+    """
+    Промпт с инструкциями по разделению текста входного домена на отдельные темы.
+    """
+    prompt = PromptTemplate(
+        template=system_prompt_for_dividing_domain_texts_to_topics(),
+        input_variables=["text"],
+        partial_variables={
+            "format_instructions": topic_segmentation_parser.get_format_instructions()
+        }
+    )
+
+    return prompt
+
 
 #   Проверка структуры промптов ###################################################################
 # prompt = text_summary_prompt()
