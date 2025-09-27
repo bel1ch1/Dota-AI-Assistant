@@ -4,21 +4,29 @@ from typing import List
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import (
-    ChatPromptTemplate,
-    SystemMessagePromptTemplate,
     PromptTemplate
 )
+import os
+from config.config import trace_config
 
 
-class Segment(BaseModel):
+class Topic(BaseModel):
+    title: str = Field(description="Название темы")
+    text: str = Field(description="Текст темы")
+
+class Domain(BaseModel):
     domain: str = Field(description="Домен к которому относится сегмент")
-    text: str = Field(description="Текст сегмента")
-
+    topics: List[Topic] = Field(
+        description="Список тем относящихся к определенному домену"
+    )
 
 class DomainSegmentation(BaseModel):
-    segments: List[Segment] = Field(
-        description="Список сегментов текста с названиями доменов"
+    segments: List[Domain] = Field(
+        description="Список доменов, содержащих топики"
     )
+
+os.environ["LANGSMITH_TRACING"] = "true"
+os.environ["LANGSMITH_API_KEY"] = trace_config.langsmith
 
 # Парсер на основе Pydantic модели
 segmentation_parser = PydanticOutputParser(pydantic_object=DomainSegmentation)
@@ -34,12 +42,21 @@ llm = ChatOpenAI(
     max_retries=2           # Количество попыток повтора
 )
 
-
 system_prompt ="""
-Раздели следующий текст на сегменты по следующим доменам:
+Ты - эксперт по анализу и структурированию текстовой информации, специализирующийся на
+тематике Dota 2.
 
+Твоя задача:
+1. Определить область знаний (домен), к которому относится часть текста
+2. В каждом домене выделить отдельные топики.
+3. Для каждой темы придумать заголовок, который описывает ее содержание и принадлежность. Например,
+если часть текста относится к HeroMechanicsTips или к варианту MatchActionsTips, в котором
+описываются советы по действиям при игре за героя, то в заголовке должна быть указана информация
+о том, к какому герою относятся эти советы.
+
+Всего возможно 4 домена:
 1. HeroMechanicsTips
-   Сюда относится информация, связанная с игрой за конкретных героев Dota 2:
+   Сюда относится информация, связанная с героями Dota 2:
    - сборки предметов
    - прокачка способностей
    - особенности героев и их механики
@@ -59,6 +76,8 @@ system_prompt ="""
 4. ComicStrategies
    Сюда относятся шуточные или нестандартные стратегии, не направленные на победу, а на развлечение.
 
+Формируй информацию в topics так, чтобы она была
+
 ---
 
 Требования к сегментации:
@@ -66,17 +85,22 @@ system_prompt ="""
 - Если часть текста не относится ни к одному домену, её можно игнорировать.
 - Сегменты не должны пересекаться и должны покрывать только релевантные куски текста.
 
-Формат вывода (для каждого сегмента):
+Формат вывода для каждого сегмента:
 - domain: выбранный домен
-- text: текст сегмента
+- topics: список тем относящихся к домену
+
+Формат вывода для каждого топика:
+- title: заголовок описывающий тему
+- text: текст относящийся к теме
 
 ---
 
+Формат вывода должен строго соответствовать следующей схеме:
+{format_instructions}
+
 Текст для анализа:
 {text}
-
-Формат вывода:
-{format_instructions}"""
+"""
 
 
 text = """Earthshaker (Эхослэм) в новом патче получил изменения в аспектах:
@@ -128,21 +152,21 @@ base_game_mechanics = []
 comic_strats = []
 error_counter = 0
 # parsing model output
-for segment in segments["segments"]:
-    if segment["domain"] == 'HeroMechanicsTips':
-        hero_mechanics_tips.append(segment["text"])
+# for segment in segments["segments"]:
+#     if segment["domain"] == 'HeroMechanicsTips':
+#         segment["topic"]
 
-    elif segment["domain"] == 'MatchActionsTips':
-        match_actions.append(segment["text"])
+#     elif segment["domain"] == 'MatchActionsTips':
+#         match_actions.append(segment["text"])
 
-    elif segment["domain"] == 'BaseGameMechanics':
-        base_game_mechanics.append(segment["text"])
+#     elif segment["domain"] == 'BaseGameMechanics':
+#         base_game_mechanics.append(segment["text"])
 
-    elif segment["domain"] == 'ComicStrategies':
-        comic_strats.append(segment["text"])
+#     elif segment["domain"] == 'ComicStrategies':
+#         comic_strats.append(segment["text"])
 
-    else:
-        error_counter += 1
-        continue
+#     else:
+#         error_counter += 1
+#         continue
 
-print(hero_mechanics_tips[0])
+# print(hero_mechanics_tips[0])
