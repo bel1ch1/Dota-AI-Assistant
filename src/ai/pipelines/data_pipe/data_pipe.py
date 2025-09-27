@@ -28,14 +28,14 @@ def data_pipeline(yaml_file_path: str):
     divided_texts = dividing_to_domains_step(summary_texts)
 
     # 5. Standardization of text by slang.Correction of incorrect terms.
-    # LLM (Correction)
+    # LLM (Correction) # Testing step
 
     # 6. Dividing each domain into topics that have only one main idea
     #    and extracting names of each topics
-    # LLM (Structured output)
+    # LLM (Structured output) # Testing step
 
     # 7. Checking topics for collisions and contradictions
-    # LLM (Correction with retrieving)
+    # LLM (Correction with retrieving from db)
 
     # 8. Vectorization of relevant topics
 
