@@ -27,6 +27,16 @@ class TraceConfig(ConfigBase):
     langsmith: str
     workspace: str
 
+class VectorDBConfig(ConfigBase):
+    model_config = SettingsConfigDict(env_prefix="vector_db_")
+
+    qdrant_path: str
+    qdrant_url: str
+    vector_size: str
+    embedder: str
+
+
 tg_config = TelegramConfig()
 ai_config = AiConfig()
 trace_config = TraceConfig()
+vector_db_config = VectorDBConfig()
