@@ -29,8 +29,8 @@ dev = [
 packages = {find = {where = ["src"]}}
 
 [tool.setuptools.package-dir]
-dota_ai_assistant = "src/ai"
 ai = "src/ai"
 pipelines = "src/ai/pipelines"
 data_pipe = "src/ai/pipelines/data_pipe"
 config = "src/config"
+vector_db = "src/vector_db"

@@ -5,3 +5,6 @@ __pycache__
 build/
 dist/
 Dota_AI_Assistant.egg-info
+collection
+.lock
+meta.json
