@@ -3,7 +3,6 @@
 """
 
 
-import os
 from config.config import vector_db_config
 from qdrant_client import QdrantClient, models
 from typing import List

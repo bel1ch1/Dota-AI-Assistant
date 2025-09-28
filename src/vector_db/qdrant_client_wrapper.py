@@ -10,7 +10,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from typing import List, Optional, Dict
 
 
-class QdrantClient:
+class QdrantWrapperClient:
     def __init__(self):
         """
         Класс-Обертка для работы с векторной базой данных Qdrant через LangChain.
@@ -112,8 +112,27 @@ class QdrantClient:
         vectorstore = self.get_vectorstore(collection_name)
         return vectorstore.similarity_search(query=query, k=k)
 
+    def client_close(self):
+        if self.client:
+            self.client.close()
+        else:
+            print("Сlient is already closed")
 
 # Usage Example ----------------------------------------------------------------------------------#
+# client = QdrantWrapperClient()
+# status = client.add_texts(
+#     collection_name="ComicStrategies",
+#     new_texts=["Эмблемы дают больше баллов, чем титулы."],
+#     metadatas=[
+#         {
+#             "title": "Ограничения и оптимальные наборы"
+#         }
+#     ]
+# )
+# print(status)
+# client.client_close()
+
+# ------------------------------------------------------------------------------------------------#
 # qdrant_client = QdrantClient()
 
 # qdrant_client.add_texts(
