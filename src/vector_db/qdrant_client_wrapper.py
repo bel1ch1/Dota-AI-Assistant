@@ -19,7 +19,7 @@ class QdrantWrapperClient:
         """
         self.db_path: str = vector_db_config.qdrant_path
         self.embedding_model: str = vector_db_config.embedder
-        self.url: str = vector_db_config
+        self.url: str = vector_db_config.qdrant_url
         self.client = QdrantClient(
             path=vector_db_config.qdrant_path
         )
@@ -80,15 +80,18 @@ class QdrantWrapperClient:
         Returns
             bool: True - если удачно, False - если неудачно
         """
-        vectorstore = self.get_vectorstore(collection_name)
         try:
+            vectorstore = self.get_vectorstore(collection_name)
             vectorstore.add_texts(
                 texts=new_texts,
                 metadatas=metadatas
             )
+            self.client_close()
+
             return True
         except Exception as e:
             print(f"Error when adding data: {e}")
+            self.client_close()
             return False
 
     def similarity_search(
@@ -112,17 +115,21 @@ class QdrantWrapperClient:
         vectorstore = self.get_vectorstore(collection_name)
         return vectorstore.similarity_search(query=query, k=k)
 
-    def client_close(self):
+    def client_close(self) -> None:
+        """
+        Корректное отключение клиента.
+        """
         if self.client:
             self.client.close()
         else:
             print("Сlient is already closed")
 
 # Usage Example ----------------------------------------------------------------------------------#
+# Add new documents
 # client = QdrantWrapperClient()
 # status = client.add_texts(
 #     collection_name="ComicStrategies",
-#     new_texts=["Эмблемы дают больше баллов, чем титулы."],
+#     new_texts=["Эмблемы дают больше баллов, чем титулы.","Эмблемы важнее, чем титулы."],
 #     metadatas=[
 #         {
 #             "title": "Ограничения и оптимальные наборы"
@@ -132,6 +139,15 @@ class QdrantWrapperClient:
 # print(status)
 # client.client_close()
 
+# Vector Search
+# client = QdrantWrapperClient()
+# resoult = client.similarity_search(
+#     collection_name="ComicStrategies",
+#     query="Эмблемы и былы или титулы",
+#     k=1
+# )
+# client.client_close()
+# print(resoult)
 # ------------------------------------------------------------------------------------------------#
 # qdrant_client = QdrantClient()
 

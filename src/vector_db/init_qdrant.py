@@ -70,6 +70,12 @@ class QdrantInitializer:
         print("✓ Collections was created")
         return domains
 
+    def client_close(self):
+        if self.client:
+            self.client.close()
+        else:
+            print("Сlient is already closed")
+
 
 if __name__ == "__main__":
     initializer = QdrantInitializer()
@@ -77,3 +83,4 @@ if __name__ == "__main__":
     if initializer.initialize_client():
         domains = initializer.setup_base_collections()
         print(f"Domains created: {domains}")
+    initializer.client_close()
