@@ -3,6 +3,7 @@ from steps.url_extract_step import extract_youtube_video_ids
 from steps.extracting_transcriptopn import extracting_transcription
 from steps.summarization_step import summarization_step
 from steps.dividing_to_domains_step import dividing_to_domains_step
+from steps.vectorization_step import vectorization_step
 
 from config.config import trace_config
 import time
@@ -10,7 +11,7 @@ import os
 
 
 @pipeline(enable_cache=False)
-def data_pipeline(yaml_file_path: str):
+def data_pipeline(yaml_file_path: str) -> None:
 
     # 1. Read all urls
     video_ids = extract_youtube_video_ids(yaml_file_path)
@@ -37,9 +38,9 @@ def data_pipeline(yaml_file_path: str):
     # 7. Checking topics for collisions and contradictions
     # LLM (Correction with retrieving from db)
 
-    # 8. Vectorization of relevant topics
-
-    # 9. Loading vectors to the vector Data Base with (tags: domains, metadata: topic name)
+    # 8. Vectorization of relevant topics and
+    #    Loading vectors to the vector Data Base with (collection: domains, metadata: topic title)
+    last_step = vectorization_step(segments=divided_texts)
 
 if __name__ == "__main__":
     os.environ["LANGSMITH_TRACING"] = "true"

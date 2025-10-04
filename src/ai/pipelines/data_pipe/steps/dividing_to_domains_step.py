@@ -13,7 +13,7 @@ def dividing_to_domains_step(summary_texts: List[str]) -> List[Dict]:
         summary_texts: Список суммаризированных текстов
 
     Retrurns:
-        List[Dict]: Список словарей, где каждый словарь хранит данные своего домена
+        List[Dict]: Список словарей, где каждый словарь хранит domain и topics
     """
 
     time.sleep(10)
